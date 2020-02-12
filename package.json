@@ -1,0 +1,17 @@
+{
+  "name": "data-mining",
+  "version": "1.0.0",
+  "description": "",
+  "main": "extract.js",
+  "dependencies": {
+    "hierarchical-clustering": "^1.1.0",
+    "json-stringify-pretty-compact": "^2.0.0",
+    "puppeteer-core": "^2.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

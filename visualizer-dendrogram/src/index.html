@@ -1,0 +1,140 @@
+﻿<!doctype html>
+<!--
+    This file is part of the DendrogramViewer project. 
+
+    Copyright (c) 2018 Pedro Sequeira (pedrodbs@gmail.com)
+ 
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ 
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<meta charset="utf-8" />
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Clustering Dendrogram Visualizer</title>
+</head>
+<body>
+    
+<table id="ui-table">
+    <tr>
+        <td id="options-column">
+            
+            <!-- **** File options **** -->
+            <p class="options-title">Dendrogram:</p>
+            <input id="input-file" type="file" accept=".json" onchange="loadFile(this.files)" style="display: none">
+            <input class="options-box" id="load-file-btn" type="button" value="Load..." onclick="document.getElementById('input-file').click();" />
+
+            <hr class="options-box" />
+
+            <!-- **** Visual options **** -->
+            <p class="options-title">Visual options:</p>
+            <div class="chkbox-box">
+                Show labels:
+                <div style="float: right">
+                    <input id="labels-chkbox" type="checkbox" unchecked onclick="onShowLabels()">
+                    <label for="labels-chkbox"></label>
+                </div>
+            </div>
+            <div class="chkbox-box">
+                Vertical layout:
+                <div style="float: right">
+                    <input id="vert-layout-chkbox" type="checkbox" checked onclick="onVertLayout()">
+                    <label for="vert-layout-chkbox"></label>
+                </div>
+            </div>
+            <div class="chkbox-box">
+                Straight links:
+                <div style="float: right">
+                    <input id="straight-chkbox" type="checkbox" checked onclick="onStraightLinks()">
+                    <label for="straight-chkbox"></label>
+                </div>
+            </div>
+            <div class="chkbox-box">
+                Grayscale:
+                <div style="float: right">
+                    <input id="grayscale-chkbox" type="checkbox" onclick="onGrayscale()">
+                    <label for="grayscale-chkbox"></label>
+                </div>
+            </div>
+            <div class="chkbox-box">
+                Background color:
+                <div style="float: right">
+                    <input id="color-picker" type="hidden" onchange="onColorSchemeChanged()" value="none">
+                    <input id="pick-color-btn" type="button" class="jscolor {valueElement: 'color-picker'}">
+                    <label for="pick-color-btn"></label>
+                </div>
+            </div>
+            <div class="options-box">
+                Color scheme:
+                <select id="color-scheme-select" class="options-select" onchange="onColorSchemeChanged();"></select>
+            </div>
+
+            <hr class="options-line"/>
+
+            <!-- **** Interaction options **** -->
+            <p class="options-title">Interaction options:</p>
+            <div class="chkbox-box">
+                Zoom & drag:
+                <div style="float: right">
+                    <input id="zoom-chkbox" type="checkbox" onclick="update()">
+                    <label for="zoom-chkbox"></label>
+                </div>
+            </div>
+            <input class="options-box" id="center-button" type="button" value="Reset view" onclick="onResetDragZoom()"/>
+
+            <hr class="options-line"/>
+
+            <!-- **** Dendrogram options **** -->
+            <p class="options-title">Dendrogram options:</p>
+            <div class="options-box">
+                Num. clusters:
+                <div class="options-box-value" id="num-clusters-slider-value">0</div>
+            </div>
+            <input class="options-box" id="num-clusters-slider" type="range"
+                   oninput="onNumClustersChanged(this.value)" onchange="onNumClustersChanged(this.value)"/>
+
+            <div class="options-box">
+                Dist. threshold:
+                <div class="options-box-value" id="threshold-slider-value">0</div>
+            </div>
+            <input class="options-box" id="threshold-slider" type="range"
+                   oninput="onThresholdChanged(this.value)" onchange="onThresholdChanged(this.value)"/>
+
+            <!-- **** Buttons **** -->
+            <hr class="options-line"/>
+            <input class="options-box" id="save-button" type="button" value="Download SVG" onclick="saveImage('innerSvg')"/>
+
+        </td>
+        <td id="container-column">
+            <div id="container"></div>
+        </td>
+    </tr>
+</table>
+
+<script src="../ext/d3.v3.min.js"></script>
+<script src="scripts/utilFunctions.js"></script>
+<script src="../ext/jscolor.js"></script>
+<script src="../ext/palette.js"></script>
+<script src="scripts/variables.js"></script>
+<script src="../ext/svg-crowbar-2.js"></script>
+<script src="scripts/uiFunctions.js"></script>
+    
+
+<script>
+    //initializes all the D3 elements
+    window.initUI();
+</script>
+
+</body>
+
+</html>
