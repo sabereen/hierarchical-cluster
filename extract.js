@@ -5,17 +5,6 @@ const cluster = require('hierarchical-clustering')
 const stringify = require('json-stringify-pretty-compact')
 
 ;(async () => {
-
-    // const browser = await puppeteer.launch({
-    //     executablePath: path.resolve(process.env['LOCALAPPDATA'], 'Google/Chrome SxS/Application/chrome.exe'),
-    //     defaultViewport: null,
-    //     headless: false,
-    // })
-
-    // const page = await browser.newPage()
-
-    // await page.goto(path.resolve('./flags1.htm'))
-
     var columnTypes = {
         booleans: 'Red Ylw Grn Blu Blck Wht Orng Prp Hor Ver Dgn'.split(' '),
         numerics: 'NC Crl Thrng Str Mon Syml Eng Crs Ism Sun Sqr'.split(' ')
@@ -37,6 +26,18 @@ const stringify = require('json-stringify-pretty-compact')
         }
     }
     
+    // // راه اندازی مرورگر
+    // const browser = await puppeteer.launch({
+    //     executablePath: path.resolve(process.env['LOCALAPPDATA'], 'Google/Chrome SxS/Application/chrome.exe'),
+    //     defaultViewport: null,
+    //     headless: false,
+    // })
+
+    // const page = await browser.newPage()
+
+    // await page.goto(path.resolve('./flags1.htm'))
+
+    // // خواندن دیتا از فایل اچ تی ام
     // const frame = await (await page.$('frameset > frame:nth-child(1)')).contentFrame()
     // let data = await frame.evaluate(() => {
     //     var data = [...document.querySelector('tbody').children].map(row => {
@@ -53,6 +54,7 @@ const stringify = require('json-stringify-pretty-compact')
     
     var reversedData = {}
     
+    // ستونی کردن داده ها
     for (let i = 0; i < data[1].length; i++) {
         reversedData[data[1][i]] = []
         for (let j = 2; j < data.length; j++) {
@@ -60,7 +62,7 @@ const stringify = require('json-stringify-pretty-compact')
         }
     }
     
-    // Convert string to number & validate them
+    // اعتبارسنجی و تبدیل رشته به عدد
     for (let column in reversedData) {
         reversedData[column] = reversedData[column].map(data => {
             if (columnTypes.booleans.includes(column) && !['', '1'].includes(data)) {
@@ -76,7 +78,7 @@ const stringify = require('json-stringify-pretty-compact')
         })
     }
     
-    // Normalize data
+    // نرمال سازی داده ها
     for (let column in reversedData) {
         /** @type {Array<number>} */
         const numbers = reversedData[column]
@@ -94,6 +96,7 @@ const stringify = require('json-stringify-pretty-compact')
         values: []
     }
     
+    // برگرداندن به حالت سطری
     for (let i = 0; i < reversedData.ID.length; i++) {
         finalData.values[i] = []
         for (let column in reversedData) {
@@ -102,6 +105,7 @@ const stringify = require('json-stringify-pretty-compact')
         }
     }
     
+    // محاسبه فاصله دو رکورد
     function distance(a, b) {
         let sum = 0
         for (let i=0; i<a.length; i++) {
@@ -109,14 +113,15 @@ const stringify = require('json-stringify-pretty-compact')
         }
         return sum ** 0.5
     }
-        
+    
+    // خوشه بندی
     const result = cluster({
         input: finalData.values,
         linkage: 'complete', // 'single', 'average', 'complete'
         distance
     })
 
-    
+    // ایجاد ساختمان داده مناسب برای بصری سازی
     function createVisualizeObject(parentList = result[result.length-1].clusters[0], levelIndex = result.length-1) {
         const level = result[levelIndex]
 
@@ -147,6 +152,7 @@ const stringify = require('json-stringify-pretty-compact')
 
     }
 
+    // ذخیره نتایج
     fs.writeFileSync('./visualizer-dendrogram/src/examples/datamining.json', stringify(createVisualizeObject()))
     fs.writeFileSync('./visualizer-dendrogram/src/examples/datamining.js', 'jsonp(' + stringify(createVisualizeObject()) + ')')
     
