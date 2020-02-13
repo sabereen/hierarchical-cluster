@@ -6,15 +6,15 @@ const stringify = require('json-stringify-pretty-compact')
 
 ;(async () => {
 
-    const browser = await puppeteer.launch({
-        executablePath: path.resolve(process.env['LOCALAPPDATA'], 'Google/Chrome SxS/Application/chrome.exe'),
-        defaultViewport: null,
-        headless: false,
-    })
+    // const browser = await puppeteer.launch({
+    //     executablePath: path.resolve(process.env['LOCALAPPDATA'], 'Google/Chrome SxS/Application/chrome.exe'),
+    //     defaultViewport: null,
+    //     headless: false,
+    // })
 
-    const page = await browser.newPage()
+    // const page = await browser.newPage()
 
-    await page.goto(path.resolve('./flags1.htm'))
+    // await page.goto(path.resolve('./flags1.htm'))
 
     var columnTypes = {
         booleans: 'Red Ylw Grn Blu Blck Wht Orng Prp Hor Ver Dgn'.split(' '),
@@ -37,19 +37,19 @@ const stringify = require('json-stringify-pretty-compact')
         }
     }
     
-    const frame = await (await page.$('frameset > frame:nth-child(1)')).contentFrame()
-    let data = await frame.evaluate(() => {
-        var data = [...document.querySelector('tbody').children].map(row => {
-            const children = [...row.children]
-            children.length = 23
-            return children.map(td => td.textContent.trim())
-        })
+    // const frame = await (await page.$('frameset > frame:nth-child(1)')).contentFrame()
+    // let data = await frame.evaluate(() => {
+    //     var data = [...document.querySelector('tbody').children].map(row => {
+    //         const children = [...row.children]
+    //         children.length = 23
+    //         return children.map(td => td.textContent.trim())
+    //     })
         
-        data.pop()
-        return data
-    })
+    //     data.pop()
+    //     return data
+    // })
     
-    // let data = require('./data.json')
+    let data = require('./data.json')
     
     var reversedData = {}
     
@@ -130,18 +130,26 @@ const stringify = require('json-stringify-pretty-compact')
         if (levelIndex == 0) return []
         const level = result[levelIndex]
 
-        return level.clusters
+        const subClusters = level.clusters
         .filter(cluster => {
-            return !parentList || (parentList.includes(cluster[0]) && parentList.length > cluster.length)
+            if (!Array.isArray(parentList)) return true
+            return parentList.includes(cluster[0])
         })
-        .map(cluster => ({
+
+        // if sub-cluster is same as current-cluster
+        if (subClusters.length == 1) {
+            return createVisualizeObject(levelIndex-1, subClusters[0])
+        }
+
+        return subClusters.map(cluster => ({
             n: '(' + cluster.join(',') + ')',
             d: level.linkage,
-            c: createVisualizeObject(levelIndex-1, cluster)
+            c: createVisualizeObject(levelIndex-1, cluster, level)
         }))
+
     }
 
-    fs.writeFileSync('./visualizer/src/examples/datamining.json', stringify(createVisualizeObject()))
+    fs.writeFileSync('./visualizer-dendrogram/src/examples/datamining.json', stringify(createVisualizeObject()))
 
     // var sortedList = [...finalData.values].sort((value1, value2) => {
     //     let d1 = distance(value1, [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
@@ -151,49 +159,49 @@ const stringify = require('json-stringify-pretty-compact')
 
     // console.log(sortedList.map(i => distance(i, [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])))
 
-    frame.evaluate(result => {
-        console.log(result)
-    //     var canvas = document.createElement('canvas')
-    //     canvas.height = window.innerHeight
-    //     canvas.width = 5000
-    //     canvas.style.position = 'absolute'
-    //     canvas.style.top = 0
-    //     canvas.style.left = 0
-    //     var ctx = canvas.getContext('2d')
+    // frame.evaluate(result => {
+    //     console.log(result)
+    // //     var canvas = document.createElement('canvas')
+    // //     canvas.height = window.innerHeight
+    // //     canvas.width = 5000
+    // //     canvas.style.position = 'absolute'
+    // //     canvas.style.top = 0
+    // //     canvas.style.left = 0
+    // //     var ctx = canvas.getContext('2d')
 
-    //     let table = document.querySelector('table')
+    // //     let table = document.querySelector('table')
 
-    //     let tops = result[0].clusters.map(([row]) => table.querySelector(`tr:nth-child(${row + 3}) > td`).offsetTop)
+    // //     let tops = result[0].clusters.map(([row]) => table.querySelector(`tr:nth-child(${row + 3}) > td`).offsetTop)
 
-    //     result.forEach((level, levelIndex) => {
-    //         level.clusters.forEach(cluster => {
-    //             cluster.forEach(row => {
-    //                 createLine(row, levelIndex)
-    //             })
-    //         })
-    //     })
+    // //     result.forEach((level, levelIndex) => {
+    // //         level.clusters.forEach(cluster => {
+    // //             cluster.forEach(row => {
+    // //                 createLine(row, levelIndex)
+    // //             })
+    // //         })
+    // //     })
 
-    //     table.parentNode.appendChild(canvas)
+    // //     table.parentNode.appendChild(canvas)
 
-    //     function createLine(row, tab) {
-    //         // ctx.moveTo(tab * 100, tops[row]);
-    //         // ctx.lineTo(tab * 101, tops[row]);
-    //         // ctx.stroke();
-    //         // var div = document.createElement('div')
+    // //     function createLine(row, tab) {
+    // //         // ctx.moveTo(tab * 100, tops[row]);
+    // //         // ctx.lineTo(tab * 101, tops[row]);
+    // //         // ctx.stroke();
+    // //         // var div = document.createElement('div')
             
-    //         // div.style.width = '100px'
-    //         // div.style.background = 'red'
-    //         // div.style.height = '3px'
-    //         // div.style.position = 'absolute'
-    //         // div.style.left = tab + '00px'
+    // //         // div.style.width = '100px'
+    // //         // div.style.background = 'red'
+    // //         // div.style.height = '3px'
+    // //         // div.style.position = 'absolute'
+    // //         // div.style.left = tab + '00px'
             
-    //         // var idElement = table.querySelector(`tr:nth-child(${row + 3}) > td`)
-    //         // div.style.top = idElement.offsetTop + 15 + 'px'
-    //         // table.parentNode.appendChild(div)
-    //     }
+    // //         // var idElement = table.querySelector(`tr:nth-child(${row + 3}) > td`)
+    // //         // div.style.top = idElement.offsetTop + 15 + 'px'
+    // //         // table.parentNode.appendChild(div)
+    // //     }
 
-    //     table.style.opacity = .3
-    }, result)
+    // //     table.style.opacity = .3
+    // }, result)
 
     // await new Promise(resolve => setTimeout(resolve, 3000))
     // await browser.close()
