@@ -126,9 +126,16 @@ const stringify = require('json-stringify-pretty-compact')
     })
 
     
-    function createVisualizeObject(levelIndex = result.length-1, parentList) {
-        if (levelIndex == 0) return []
+    function createVisualizeObject(parentList = result[result.length-1].clusters[0], levelIndex = result.length-1) {
         const level = result[levelIndex]
+
+        if (levelIndex == 0) {
+            return {
+                n: '(' + parentList.join(',') + ')',
+                d: 0,
+                c: []
+            }
+        }
 
         const subClusters = level.clusters
         .filter(cluster => {
@@ -137,15 +144,22 @@ const stringify = require('json-stringify-pretty-compact')
         })
 
         // if sub-cluster is same as current-cluster
-        if (subClusters.length == 1) {
-            return createVisualizeObject(levelIndex-1, subClusters[0])
+        if (subClusters.length == 1 && levelIndex > 0) {
+            return createVisualizeObject(subClusters[0], levelIndex-1)
         }
 
-        return subClusters.map(cluster => ({
-            n: '(' + cluster.join(',') + ')',
+        // return subClusters.map(cluster => ({
+        //     n: '(' + cluster.join(',') + ')',
+        //     d: level.linkage,
+        //     c: createVisualizeObject(levelIndex-1, cluster, level)
+        // }))
+
+        return {
+            n: '(' + parentList.join(',') + ')',
             d: level.linkage,
-            c: createVisualizeObject(levelIndex-1, cluster, level)
-        }))
+            c: subClusters.map(cluster => createVisualizeObject(cluster, levelIndex-1))
+        }
+
 
     }
 
