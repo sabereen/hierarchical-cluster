@@ -117,7 +117,7 @@ const stringify = require('json-stringify-pretty-compact')
     // خوشه بندی
     const result = cluster({
         input: finalData.values,
-        linkage: 'complete', // 'single', 'average', 'complete'
+        linkage: 'average', // 'single', 'average', 'complete'
         distance
     })
 
@@ -127,7 +127,7 @@ const stringify = require('json-stringify-pretty-compact')
 
         if (levelIndex == 0) {
             return {
-                n: '(' + parentList.join(',') + ')',
+                n: '(' + parentList[0] + ')',
                 d: 0,
                 c: []
             }
@@ -140,7 +140,7 @@ const stringify = require('json-stringify-pretty-compact')
         })
 
         // if sub-cluster is same as current-cluster
-        if (subClusters.length == 1 && levelIndex > 0) {
+        if (subClusters.length == 1) {
             return createVisualizeObject(subClusters[0], levelIndex-1)
         }
 
