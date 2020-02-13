@@ -87,12 +87,7 @@ const stringify = require('json-stringify-pretty-compact')
             columns[column].max = max
             reversedData[column] = numbers.map(n => (n - min) / (max - min))
         }
-    }
-    
-    function convertNormalToOriginal() { }
-    
-    // console.log(reversedData)
-    
+    }    
     
     var finalData = {
         columns: Object.keys(reversedData),
@@ -114,14 +109,10 @@ const stringify = require('json-stringify-pretty-compact')
         }
         return sum ** 0.5
     }
-    
-    function linkage(distances) {
-        return Math.min(...distances) // single linkage
-    }
-    
+        
     const result = cluster({
         input: finalData.values,
-        linkage: 'complete',
+        linkage: 'complete', // 'single', 'average', 'complete'
         distance
     })
 
@@ -148,77 +139,16 @@ const stringify = require('json-stringify-pretty-compact')
             return createVisualizeObject(subClusters[0], levelIndex-1)
         }
 
-        // return subClusters.map(cluster => ({
-        //     n: '(' + cluster.join(',') + ')',
-        //     d: level.linkage,
-        //     c: createVisualizeObject(levelIndex-1, cluster, level)
-        // }))
-
         return {
             n: '(' + parentList.join(',') + ')',
             d: level.linkage,
             c: subClusters.map(cluster => createVisualizeObject(cluster, levelIndex-1))
         }
 
-
     }
 
     fs.writeFileSync('./visualizer-dendrogram/src/examples/datamining.json', stringify(createVisualizeObject()))
-
-    // var sortedList = [...finalData.values].sort((value1, value2) => {
-    //     let d1 = distance(value1, [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-    //     let d2 = distance(value2, [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-    //     return d1 - d2
-    // })
-
-    // console.log(sortedList.map(i => distance(i, [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])))
-
-    // frame.evaluate(result => {
-    //     console.log(result)
-    // //     var canvas = document.createElement('canvas')
-    // //     canvas.height = window.innerHeight
-    // //     canvas.width = 5000
-    // //     canvas.style.position = 'absolute'
-    // //     canvas.style.top = 0
-    // //     canvas.style.left = 0
-    // //     var ctx = canvas.getContext('2d')
-
-    // //     let table = document.querySelector('table')
-
-    // //     let tops = result[0].clusters.map(([row]) => table.querySelector(`tr:nth-child(${row + 3}) > td`).offsetTop)
-
-    // //     result.forEach((level, levelIndex) => {
-    // //         level.clusters.forEach(cluster => {
-    // //             cluster.forEach(row => {
-    // //                 createLine(row, levelIndex)
-    // //             })
-    // //         })
-    // //     })
-
-    // //     table.parentNode.appendChild(canvas)
-
-    // //     function createLine(row, tab) {
-    // //         // ctx.moveTo(tab * 100, tops[row]);
-    // //         // ctx.lineTo(tab * 101, tops[row]);
-    // //         // ctx.stroke();
-    // //         // var div = document.createElement('div')
-            
-    // //         // div.style.width = '100px'
-    // //         // div.style.background = 'red'
-    // //         // div.style.height = '3px'
-    // //         // div.style.position = 'absolute'
-    // //         // div.style.left = tab + '00px'
-            
-    // //         // var idElement = table.querySelector(`tr:nth-child(${row + 3}) > td`)
-    // //         // div.style.top = idElement.offsetTop + 15 + 'px'
-    // //         // table.parentNode.appendChild(div)
-    // //     }
-
-    // //     table.style.opacity = .3
-    // }, result)
-
-    // await new Promise(resolve => setTimeout(resolve, 3000))
-    // await browser.close()
+    fs.writeFileSync('./visualizer-dendrogram/src/examples/datamining.js', 'jsonp(' + stringify(createVisualizeObject()) + ')')
     
     fs.writeFileSync('./result.json', stringify(result))
     

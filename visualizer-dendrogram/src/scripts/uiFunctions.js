@@ -72,6 +72,17 @@ function loadFromUrl() {
         });
 }
 
+function loadFromJSONP() {
+    window.jsonp = function (clusterJsonObj) {
+        window.root = clusterJsonObj;
+        window.readData(clusterJsonObj);
+    }
+    let script = document.createElement('script')
+    script.src = 'examples/datamining.js'
+    script.async = true
+    document.head.appendChild(script)
+}
+
 // #endregion
 
 
@@ -121,7 +132,8 @@ function initUI() {
     }
 
     //reads data and initializes graph
-    loadFromUrl();
+    // loadFromUrl();
+    loadFromJSONP()
 }
 
 /**
